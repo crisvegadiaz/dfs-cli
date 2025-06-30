@@ -1,0 +1,27 @@
+#!/usr/bin/node
+import update from "./update.mjs";
+import search from "./search.mjs";
+import getPackageManager from "./util/getPackageManager.mjs";
+
+const commands = await getPackageManager();
+
+switch (process.argv[2]) {
+  case "update":
+    superusuario();
+    await update(commands, process.argv[3]);
+    break;
+  case "search":
+    await search(commands, process.argv[3]);
+    break;
+  default:
+    console.log("Comando no reconocido. Usa 'update' o 'search'.");
+    break;
+}
+
+function superusuario() {
+  if (process.getuid() !== 0) {
+    console.error("Error: Este comando requiere permisos de superusuario.");
+    console.error("Por favor, ejecuta el comando con 'sudo'.");
+    process.exit(1);
+  }
+}
