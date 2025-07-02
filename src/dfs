@@ -1,6 +1,7 @@
 #!/usr/bin/node
 import update from "./update.mjs";
 import search from "./search.mjs";
+import superusuario from "./util/superusuario.js";
 import getPackageManager from "./util/getPackageManager.mjs";
 
 const commands = await getPackageManager();
@@ -8,20 +9,22 @@ const commands = await getPackageManager();
 switch (process.argv[2]) {
   case "update":
     superusuario();
-    await update(commands, process.argv[3]);
+    await update(commands, process.argv[3], process.argv[4]);
     break;
   case "search":
-    await search(commands, process.argv[3]);
+    await search(commands, process.argv[3], process.argv[4]);
     break;
   default:
-    console.log("Comando no reconocido. Usa 'update' o 'search'.");
+    console.error("Comando no reconocido.\n");
+    console.warn(
+      "Uso: dfs <comando> [opciones]\n" +
+        "Comandos disponibles:\n" +
+        "  update - Actualiza el sistema\n" +
+        "  search - Busca paquetes en el sistema\n" +
+        "Opciones para 'search':\n" +
+        "  -d - Buscar en el gestor del sistema\n" +
+        "  -f - Buscar aplicaciones Flatpak\n" +
+        "  -s - Buscar aplicaciones Snap\n"
+    );
     break;
-}
-
-function superusuario() {
-  if (process.getuid() !== 0) {
-    console.error("Error: Este comando requiere permisos de superusuario.");
-    console.error("Por favor, ejecuta el comando con 'sudo'.");
-    process.exit(1);
-  }
 }

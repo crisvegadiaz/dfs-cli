@@ -4,95 +4,126 @@ import chalk from "chalk";
 import Table from "cli-table3";
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 
-// Utilidad para imprimir secciones con color
-const printSection = (color, label) => {
-  console.log(chalk[color].bold(label));
-};
+// Imprime una sección con color y formato
+const printSection = (color, label) => console.log(chalk[color].bold(label));
 
-// Crea una tabla cuyos anchos de columna se ajustan al terminal
-const createTable = (headers, colProportions) => {
-  const terminalWidth = process.stdout.columns || 120;
-  // Overhead: (num_cols + 1) para bordes, y 2*num_cols para padding (izq/der 1)
-  const tableOverhead = 3 * headers.length + 1;
-  const tableWidth = terminalWidth - tableOverhead;
-  const totalProportion = colProportions.reduce((sum, p) => sum + p, 0);
-
-  const colWidths = colProportions.map((p) =>
-    Math.floor(tableWidth * (p / totalProportion))
+// Crea una tabla con anchos proporcionales a la terminal
+const createTable = (headers, proportions) => {
+  const width = process.stdout.columns || 120;
+  const overhead = 3 * headers.length + 1;
+  const usableWidth = width - overhead;
+  const total = proportions.reduce((a, b) => a + b, 0);
+  const colWidths = proportions.map((p) =>
+    Math.floor(usableWidth * (p / total))
   );
-
   return new Table({ head: headers, colWidths, wordWrap: true });
 };
 
 // Parsea la salida de búsqueda de paquetes del sistema
-function parseSystemPackages(output) {
-  const table = createTable(["Paquete", "Descripción"], [4, 6]); // Proporciones 40%/60%
+const parseSystemPackages = (output) => {
+  const table = createTable(["Paquete", "Descripción"], [4, 6]);
   output.split("\n").forEach((line) => {
-    const [name, ...descParts] = line.split(":");
-    if (descParts.length) {
-      table.push([name.trim(), descParts.join(":").trim()]);
-    }
+    const [name, ...desc] = line.split(":");
+    if (desc.length) table.push([name.trim(), desc.join(":").trim()]);
   });
   return table.toString();
-}
+};
 
 // Parsea la salida de búsqueda de Flatpak
-function parseFlatpakPackages(output) {
-  // Proporciones 40% ID, 20% Paquete, 40% Descripción
+const parseFlatpakPackages = (output) => {
   const table = createTable(["ID", "Paquete", "Descripción"], [4, 2, 4]);
   output.split("\n").forEach((line) => {
     const [packageName, description, id] = line.split("\t");
-    if (id && packageName && description) {
+    if (id && packageName && description)
       table.push([id.trim(), packageName.trim(), description.trim()]);
-    }
   });
   return table.toString();
-}
+};
 
 // Parsea la salida de búsqueda de Snap
-function parseSnapPackages(output) {
-  const table = createTable(["Paquete", "Descripción"], [4, 6]); // Proporciones 40%/60%
+const parseSnapPackages = (output) => {
+  const table = createTable(["Paquete", "Descripción"], [4, 6]);
   output.split("\n").forEach((line) => {
     const columns = line.split(/\s{2,}/);
-    if (columns.length >= 5) {
-      table.push([columns[0].trim(), columns[4].trim()]);
-    }
+    if (columns.length >= 5) table.push([columns[0].trim(), columns[4].trim()]);
   });
   return table.toString();
-}
+};
+
+// Ejecuta una búsqueda y muestra los resultados
+const runSearch = async (
+  { label, color, isInstalled, cmd, parser, notInstalledMsg },
+  searchTerm
+) => {
+  printSection(color, label);
+  let command = cmd;
+  if (typeof isInstalled === "function") {
+    const tool = await isInstalled();
+    if (!tool) {
+      console.log(chalk.gray(notInstalledMsg));
+      return;
+    }
+    command = [tool.dnf, tool.search, searchTerm];
+  }
+  try {
+    const result = await $`${command}`;
+    console.log(parser(result.stdout));
+  } catch {
+    console.log(chalk.red("Error ejecutando búsqueda.\n"));
+  }
+};
 
 // Función principal de búsqueda
-export default async function search(commands, searchTerm) {
+export default async function search(commands, searchTerm, options) {
   console.log(chalk.blue.bold(` Buscando: ${searchTerm}\n`));
 
-  // Buscar en el sistema (ej: DNF)
-  printSection(
-    "yellow",
-    ">>>  Buscando paquetes con el gestor del sistema...\n"
-  );
-  const systemCmd = [commands.dnf, commands.search, searchTerm];
-  const systemResult = await $`${systemCmd}`;
-  console.log(parseSystemPackages(systemResult.stdout));
-
-  // Buscar en Flatpak
-  printSection("blue", ">>>  Buscando aplicaciones Flatpak...\n");
-  const flatpak = await isFlatpakInstalled();
-  if (flatpak) {
-    const flatpakCmd = [flatpak.dnf, flatpak.search, searchTerm];
-    const flatpakResult = await $`${flatpakCmd}`;
-    console.log(parseFlatpakPackages(flatpakResult.stdout));
-  } else {
-    console.log(chalk.gray("Flatpak no está instalado.\n"));
-  }
-
-  // Buscar en Snap
-  printSection("red", ">>>  Buscando aplicaciones Snap...\n");
-  const snap = await isSnapInstalled();
-  if (snap) {
-    const snapCmd = [snap.dnf, snap.search, searchTerm];
-    const snapResult = await $`${snapCmd}`;
-    console.log(parseSnapPackages(snapResult.stdout));
-  } else {
-    console.log(chalk.gray("Snap no está instalado.\n"));
+  switch (options) {
+    case "-d":
+      await runSearch(
+        {
+          label: ">>>  Buscando paquetes con el gestor del sistema...\n",
+          color: "yellow",
+          cmd: [commands.dnf, commands.search, searchTerm],
+          parser: parseSystemPackages,
+          notInstalledMsg: "",
+        },
+        searchTerm
+      );
+      break;
+    case "-f":
+      await runSearch(
+        {
+          label: ">>>  Buscando aplicaciones Flatpak...\n",
+          color: "blue",
+          isInstalled: isFlatpakInstalled,
+          parser: parseFlatpakPackages,
+          notInstalledMsg: "Flatpak no está instalado.\n",
+        },
+        searchTerm
+      );
+      break;
+    case "-s":
+      await runSearch(
+        {
+          label: ">>>  Buscando aplicaciones Snap...\n",
+          color: "red",
+          isInstalled: isSnapInstalled,
+          parser: parseSnapPackages,
+          notInstalledMsg: "Snap no está instalado.\n",
+        },
+        searchTerm
+      );
+      break;
+    default:
+      console.error(chalk.yellow("Opción no reconocida. Usa -d, -f o -s.\n"));
+      console.warn(
+        chalk.gray(
+          "Ejemplo: dfs search firefox -d \n" +
+            "-d para buscar en el sistema \n" +
+            "-f para buscar en Flatpak \n" +
+            "-s para buscar en Snap \n"
+        )
+      );
+      break;
   }
 }

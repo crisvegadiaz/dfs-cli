@@ -33,7 +33,7 @@
     "remove": "remove",
     "list": "list",
     "-y": "-y",
-    "--refresh": "--refresh"
+    "--refresh": null
   },
   "snap": {
     "dnf": "snap",

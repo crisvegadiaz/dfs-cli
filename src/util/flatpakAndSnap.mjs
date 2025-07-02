@@ -4,10 +4,10 @@ import chalk from "chalk";
 import managers from "../commands/managers.json" with { type: "json" };
 
 async function isCommandInstalled(command, managerKey, notFoundMsg) {
-  const { exitCode } = await $`command -v ${command}`.quiet();
-  if (exitCode === 0) {
+  try {
+    await $`command -v ${command}`.quiet();
     return managers[managerKey];
-  } else {
+  } catch {
     console.log(chalk.green.bold(notFoundMsg));
     return null;
   }
