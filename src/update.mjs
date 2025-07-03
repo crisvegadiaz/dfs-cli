@@ -14,7 +14,7 @@ async function runUpdate({ label, color, isInstalled, cmd }) {
   if (typeof isInstalled === "function") {
     const tool = await isInstalled();
     if (!tool) return;
-    command = [tool.dnf, tool.update, tool["-y"]].filter(Boolean);
+    command = [tool.pack, tool.update, tool["-y"]].filter(Boolean);
   }
 
   try {
@@ -31,7 +31,7 @@ export default async function update(commands, option) {
   const systemUpdate = {
     label: text.title1,
     color: "yellow",
-    cmd: [commands.dnf, commands.update, commands["-y"], commands["--refresh"]],
+    cmd: [commands.pack, commands.update, commands["-y"], commands["--refresh"]],
   };
 
   const flatpakUpdate = {

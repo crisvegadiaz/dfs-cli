@@ -1,6 +1,6 @@
 {
   "debian": {
-    "dnf": "apt",
+    "pack": "apt",
     "update": "update",
     "search": "search",
     "remove": "remove",
@@ -9,7 +9,7 @@
     "--refresh": "--fix-missing"
   },
   "fedora": {
-    "dnf": "dnf",
+    "pack": "dnf",
     "update": "update",
     "search": "search",
     "remove": "remove",
@@ -18,7 +18,7 @@
     "--refresh": "--refresh"
   },
   "arch": {
-    "dnf": "pacman",
+    "pack": "pacman",
     "update": "-Syu",
     "search": "-Ss",
     "remove": "-Rns",
@@ -27,7 +27,7 @@
     "--refresh": "--refresh"
   },
   "flatpak": {
-    "dnf": "flatpak",
+    "pack": "flatpak",
     "update": "update",
     "search": "search",
     "remove": "remove",
@@ -36,7 +36,7 @@
     "--refresh": null
   },
   "snap": {
-    "dnf": "snap",
+    "pack": "snap",
     "update": "refresh",
     "search": "search",
     "remove": "remove",

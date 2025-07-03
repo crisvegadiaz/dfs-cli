@@ -61,7 +61,7 @@ const runSearch = async (
   if (typeof isInstalled === "function") {
     const tool = await isInstalled();
     if (!tool) return;
-    command = [tool.dnf, tool.search, searchTerm].filter(Boolean);
+    command = [tool.pack, tool.search, searchTerm].filter(Boolean);
   }
 
   try {
@@ -77,7 +77,7 @@ export default async function search(commands, searchTerm, options) {
   const systemSearch = {
     label: text.title1,
     color: "yellow",
-    cmd: [commands.dnf, commands.search, searchTerm],
+    cmd: [commands.pack, commands.search, searchTerm],
     parser: parseSystemPackages,
   };
 
