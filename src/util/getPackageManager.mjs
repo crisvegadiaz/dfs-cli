@@ -1,6 +1,7 @@
 import { $ } from "zx";
-import chalk from "chalk";
+import printSection from "./printSection.mjs";
 import managers from "../commands/managers.json" with { type: "json" };
+import text from "../text/getPackageManager.json" with { type: "json"};
 
 export default async function getPackageManager() {
   try {
@@ -14,15 +15,11 @@ export default async function getPackageManager() {
       case "arch":
         return managers.arch;
       default:
-        console.error(
-          chalk.red.bold(
-            "Unsupported OS. Please use Debian, Fedora, or Arch Linux."
-          )
-        );
+        printSection("red", text.warning);
         return null;
     }
   } catch (error) {
-    console.error(chalk.red("Error detecting OS:"), error.message);
+    printSection("red",`${text.error}, ${error.message}`)
     return null;
   }
 }

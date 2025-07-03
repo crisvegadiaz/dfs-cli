@@ -1,11 +1,10 @@
 #!/usr/bin/env zx
 import { $ } from "zx";
-import chalk from "chalk";
 import Table from "cli-table3";
+import printHelp from "./util/printHelp.mjs";
+import printSection from "./util/printSection.mjs";
+import text from "./text/search.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
-
-// Imprime una sección con color y formato
-const printSection = (color, label) => console.log(chalk[color].bold(label));
 
 // Crea una tabla con anchos proporcionales a la terminal
 const createTable = (headers, proportions) => {
@@ -52,78 +51,68 @@ const parseSnapPackages = (output) => {
 
 // Ejecuta una búsqueda y muestra los resultados
 const runSearch = async (
-  { label, color, isInstalled, cmd, parser, notInstalledMsg },
+  { label, color, isInstalled, cmd, parser },
   searchTerm
 ) => {
   printSection(color, label);
-  let command = cmd;
+
+  let command = cmd?.filter(Boolean);
+
   if (typeof isInstalled === "function") {
     const tool = await isInstalled();
-    if (!tool) {
-      console.log(chalk.gray(notInstalledMsg));
-      return;
-    }
-    command = [tool.dnf, tool.search, searchTerm];
+    if (!tool) return;
+    command = [tool.dnf, tool.search, searchTerm].filter(Boolean);
   }
+
   try {
     const result = await $`${command}`;
     console.log(parser(result.stdout));
   } catch {
-    console.log(chalk.red("Error ejecutando búsqueda.\n"));
+    printSection("red", text.error1);
   }
 };
 
 // Función principal de búsqueda
 export default async function search(commands, searchTerm, options) {
-  console.log(chalk.blue.bold(` Buscando: ${searchTerm}\n`));
+  const systemSearch = {
+    label: text.title1,
+    color: "yellow",
+    cmd: [commands.dnf, commands.search, searchTerm],
+    parser: parseSystemPackages,
+  };
+
+  const flatpakSearch = {
+    label: text.title2,
+    color: "blue",
+    isInstalled: isFlatpakInstalled,
+    parser: parseFlatpakPackages,
+  };
+
+  const snapSearch = {
+    label: text.title3,
+    color: "red",
+    isInstalled: isSnapInstalled,
+    parser: parseSnapPackages,
+  };
 
   switch (options) {
     case "-d":
-      await runSearch(
-        {
-          label: ">>>  Buscando paquetes con el gestor del sistema...\n",
-          color: "yellow",
-          cmd: [commands.dnf, commands.search, searchTerm],
-          parser: parseSystemPackages,
-          notInstalledMsg: "",
-        },
-        searchTerm
-      );
+      await runSearch(systemSearch);
       break;
     case "-f":
-      await runSearch(
-        {
-          label: ">>>  Buscando aplicaciones Flatpak...\n",
-          color: "blue",
-          isInstalled: isFlatpakInstalled,
-          parser: parseFlatpakPackages,
-          notInstalledMsg: "Flatpak no está instalado.\n",
-        },
-        searchTerm
-      );
+      await runSearch(flatpakSearch, searchTerm);
       break;
     case "-s":
-      await runSearch(
-        {
-          label: ">>>  Buscando aplicaciones Snap...\n",
-          color: "red",
-          isInstalled: isSnapInstalled,
-          parser: parseSnapPackages,
-          notInstalledMsg: "Snap no está instalado.\n",
-        },
-        searchTerm
-      );
+      await runSearch(snapSearch, searchTerm);
+      break;
+    case undefined:
+      await runSearch(systemSearch, searchTerm);
+      await runSearch(flatpakSearch, searchTerm);
+      await runSearch(snapSearch, searchTerm);
       break;
     default:
-      console.error(chalk.yellow("Opción no reconocida. Usa -d, -f o -s.\n"));
-      console.warn(
-        chalk.gray(
-          "Ejemplo: dfs search firefox -d \n" +
-            "-d para buscar en el sistema \n" +
-            "-f para buscar en Flatpak \n" +
-            "-s para buscar en Snap \n"
-        )
-      );
+      printSection("red", text.error2);
+      printHelp(text.help);
       break;
   }
 }

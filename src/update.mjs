@@ -1,85 +1,69 @@
 #!/usr/bin/env zx
 import { $ } from "zx";
-import chalk from "chalk";
+import printHelp from "./util/printHelp.mjs";
+import printSection from "./util/printSection.mjs";
+import text from "./text/update.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 
-async function runUpdate(commandArray) {
-  try {
-    await $`${commandArray}`;
-  } catch (error) {
-    if (error.exitCode === 1) {
-      console.error(
-        chalk.yellow(
-          "\n>>> 󱧖 Operación cancelada por el usuario o ha ocurrido un error.\n"
-        )
-      );
-    }
+//  Ejecuta el comando de actualización para el tipo de paquete especificado.
+async function runUpdate({ label, color, isInstalled, cmd }) {
+  printSection(color, label);
+
+  let command = cmd?.filter(Boolean);
+
+  if (typeof isInstalled === "function") {
+    const tool = await isInstalled();
+    if (!tool) return;
+    command = [tool.dnf, tool.update, tool["-y"]].filter(Boolean);
   }
+
+  try {
+    await $`${command}`;
+  } catch {
+    printSection("red", text.error1);
+  }
+
+  printSection("bgYellow", text.separator);
 }
 
-function printSeparator() {
-  console.log(chalk.bgYellow.bold("+=================================+\n"));
-}
+//  Ejecuta las actualizaciones según la opción seleccionada.
+export default async function update(commands, option) {
+  const systemUpdate = {
+    label: text.title1,
+    color: "yellow",
+    cmd: [commands.dnf, commands.update, commands["-y"], commands["--refresh"]],
+  };
 
-export default async function update(commands, options) {
-  switch (options) {
+  const flatpakUpdate = {
+    label: text.title2,
+    color: "blue",
+    isInstalled: isFlatpakInstalled,
+  };
+
+  const snapUpdate = {
+    label: text.title3,
+    color: "red",
+    isInstalled: isSnapInstalled,
+  };
+
+  switch (option) {
     case "-d":
-      // Actualiza los paquetes del sistema
-      console.log(
-        chalk.yellow.bold(">>>  Actualizando paquetes del sistema...\n")
-      );
-      const systemUpdateCmd = [
-        commands.dnf,
-        commands.update,
-        commands["-y"],
-        commands["--refresh"],
-      ].filter(Boolean);
-      await runUpdate(systemUpdateCmd);
-      printSeparator();
+      await runUpdate(systemUpdate);
       break;
     case "-f":
-      // Actualiza aplicaciones Flatpak si está instalado
-      const flatpak = await isFlatpakInstalled();
-      if (flatpak) {
-        console.log(
-          chalk.blue.bold(">>>  Actualizando aplicaciones Flatpak...\n")
-        );
-        const flatpakUpdateCmd = [
-          flatpak.dnf,
-          flatpak.update,
-          flatpak["-y"],
-          flatpak["--refresh"],
-        ].filter(Boolean);
-        await runUpdate(flatpakUpdateCmd);
-        printSeparator();
-      }
+      await runUpdate(flatpakUpdate);
       break;
     case "-s":
-      // Actualiza aplicaciones Snap si está instalado
-      const snap = await isSnapInstalled();
-      if (snap) {
-        console.log(
-          chalk.blue.bold(">>>  Actualizando aplicaciones Snap...\n")
-        );
-        const snapUpdateCmd = [
-          snap.dnf,
-          snap.update,
-          snap["-y"],
-          snap["--refresh"],
-        ].filter(Boolean);
-        await runUpdate(snapUpdateCmd);
-        printSeparator();
-      }
+      await runUpdate(snapUpdate);
+      break;
+    case undefined:
+      await runUpdate(systemUpdate);
+      await runUpdate(flatpakUpdate);
+      await runUpdate(snapUpdate);
       break;
     default:
-      console.error(chalk.yellow("Opción no reconocida. Usa -d, -f o -s.\n"));
-      console.warn(
-        chalk.gray(
-          "Ejemplo: dfs update -d \n" +
-            "-d para actualizar el sistema \n" +
-            "-f para actualizar aplicaciones Flatpak \n" +
-            "-s para actualizar aplicaciones Snap \n"
-        )
-      );
+      printSection("red", text.error2);
+      printHelp(text.help);
+      break;
   }
 }
