@@ -1,4 +1,5 @@
 #!/usr/bin/node
+import list from "./list.mjs";
 import update from "./update.mjs";
 import search from "./search.mjs";
 import printHelp from "./util/printHelp.mjs";
@@ -6,6 +7,7 @@ import superUser from "./util/superUser.js";
 import printSection from "./util/printSection.mjs";
 import text from "./text/dnf.json" with { type: "json" };
 import getPackageManager from "./util/getPackageManager.mjs";
+
 
 const commands = await getPackageManager();
 
@@ -16,6 +18,9 @@ switch (process.argv[2]) {
     break;
   case "search":
     await search(commands, process.argv[3], process.argv[4]);
+    break;
+  case "list":
+    await list(commands, process.argv[3]);
     break;
   default:
     printSection("red",text.error);

@@ -5,6 +5,7 @@
     "Comandos disponibles:",
     "  update - Actualiza el sistema.",
     "  search - Busca paquetes en el sistema.",
+    "  list - Lista los paquetes del sistema.",
     "Opciones:",
     "  -d - Actualiza el sistema operativo.",
     "  -f - Actualiza las aplicaciones Flatpak.",
