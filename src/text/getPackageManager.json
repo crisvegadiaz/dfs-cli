@@ -1,4 +1,4 @@
 {
   "warning": "Sistema operativo no compatible. Por favor, use Debian, Fedora o Arch Linux.",
-  "error": "`(Error al detectar el sistema operativo:)"
+  "error": "✗ (Error al detectar el sistema operativo:)"
 }

@@ -2,8 +2,8 @@
   "title1": ">>>  Actualizando paquetes del sistema...",
   "title2": ">>>  Actualizando aplicaciones Flatpak...",
   "title3": ">>>  Actualizando aplicaciones Snap...",
-  "error1": "Error al actualizar los paquetes.",
-  "error2": "Opción no reconocida. Usa -d, -f o -s.",
+  "error1": "✗ Error al actualizar los paquetes.",
+  "error2": "✗ Opción no reconocida. Usa -d, -f o -s.",
   "separator": "+=================================+",
   "help": [
     "Ejemplo: sudo dfs update -d",

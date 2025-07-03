@@ -1,5 +1,5 @@
 {
-  "error": "Comando no reconocido.",
+  "error": "✗ Comando no reconocido.",
   "help": [
     "Uso: dfs <comando> [opciones]",
     "Comandos disponibles:",

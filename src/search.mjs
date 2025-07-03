@@ -73,7 +73,10 @@ const runSearch = async (
 };
 
 // Función principal de búsqueda
-export default async function search(commands, searchTerm, options) {
+export default async function search(commands, searchTerm=null, options) {
+  
+  if(!searchTerm) return printSection("red", text.error2)
+
   const systemSearch = {
     label: text.title1,
     color: "yellow",
@@ -111,7 +114,7 @@ export default async function search(commands, searchTerm, options) {
       await runSearch(snapSearch, searchTerm);
       break;
     default:
-      printSection("red", text.error2);
+      printSection("red", text.error3);
       printHelp(text.help);
       break;
   }

@@ -1,5 +1,5 @@
 {
-  "error": ">>>   Error: Este comando requiere permisos de superusuario.",
+  "error": "✗   Error: Este comando requiere permisos de superusuario.",
   "help": [
     ">>>   Por favor, ejecuta el comando con 'sudo'.",
     "Ejemplo: sudo dfs update -d"
