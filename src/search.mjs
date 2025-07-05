@@ -74,8 +74,8 @@ const runSearch = async (
   try {
     const result = await $`${command}`;
     console.log(parser(result.stdout));
-  } catch {
-    printSection("red", text.error1);
+  } catch (error){
+    printSection("red", `${text.error1} ${error}`);
   }
 };
 

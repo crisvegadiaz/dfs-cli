@@ -2,7 +2,7 @@
   "title1": ">>>   Listando paquetes del sistema...",
   "title2": ">>>   Listando de aplicaciones Flatpak...",
   "title3": ">>>   Listando de aplicaciones Snap...",
-  "error1": "✗ Error al listar los paquetes.",
+  "error1": "✗ Error al listar los paquetes -->>>",
   "error2": "✗ Opción no reconocida. Usa -d, -f o -s.",
   "separator": "+=================================+",
   "help": [

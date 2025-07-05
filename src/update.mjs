@@ -19,8 +19,8 @@ async function runUpdate({ label, color, isInstalled, cmd }) {
 
   try {
     await $`${command}`;
-  } catch {
-    printSection("red", text.error1);
+  } catch (error){
+    printSection("red", `${text.error1} ${error}`);
   }
 
   printSection("bgYellow", text.separator);

@@ -6,28 +6,39 @@ import text from "./text/list.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 import createTable from "./util/createTable.js";
 
+// --- Parsers ---
+
 // Parsea la salida de lista de paquetes del sistema
-const parseSystemPackages = (output) => {
-  const table = createTable(["Paquete", "Versión", "Repositorio"], [4, 3, 3]);
-  const lines = output.split("\n");
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line.trim()) continue;
-    const columns = line.split(/\s{2,}/).map(col => col.trim());
+function parseSystemPackages(output) {
+  const table = createTable(
+    ["Paquete", "Versión", "Repositorio"],
+    [4, 3, 3]
+  );
+
+  output.split("\n").forEach((line, idx) => {
+    if (idx === 0 || !line.trim()) return;
+
+    const columns = line.split(/\s{2,}/);
     if (columns.length >= 3) {
-      table.push([columns[0], columns[1], columns[2]]);
+      table.push([
+        columns[0].trim(),
+        columns[1].trim(),
+        columns[2].trim()
+      ]);
     }
-  }
+  });
+
   return table.toString();
-};
+}
 
 // Parsea la salida de lista de Flatpak
-const parseFlatpakPackages = (output) => {
+function parseFlatpakPackages(output) {
   const table = createTable(
     ['Name', 'ID', 'Version', 'Branch', 'Origin'],
-    [2, 3, 1, 1, 1],
+    [2, 3, 1, 1, 1]
   );
-  output.split("\n").forEach((line) => {
+
+  output.split("\n").forEach(line => {
     const [name, id, version, branch, origin] = line.split("\t");
     if (name && id && version && branch && origin) {
       table.push([
@@ -39,17 +50,20 @@ const parseFlatpakPackages = (output) => {
       ]);
     }
   });
+
   return table.toString();
-};
+}
 
 // Parsea la salida de lista de Snap
-const parseSnapPackages = (output) => {
+function parseSnapPackages(output) {
   const table = createTable(
     ["Name", "Version", "Rev", "Tracking", "Publisher", "Notes"],
     [3, 4, 1, 2, 3, 1]
   );
+
   output.split("\n").forEach((line, idx) => {
     if (idx === 0 || !line.trim()) return;
+
     const columns = line.split(/\s{2,}/);
     if (columns.length >= 6) {
       table.push([
@@ -62,9 +76,11 @@ const parseSnapPackages = (output) => {
       ]);
     }
   });
-  return table.toString();
-};
 
+  return table.toString();
+}
+
+// --- Main runner ---
 async function runList({ label, color, isInstalled, cmd, parser }) {
   printSection(color, label);
 
@@ -75,14 +91,16 @@ async function runList({ label, color, isInstalled, cmd, parser }) {
     if (!tool) return;
     command = [tool.pack, tool.list, tool["--installed"]].filter(Boolean);
   }
+
   try {
-    const  {stdout}  = await $`${command}`;
+    const { stdout } = await $`${command}`;
     console.log(parser(stdout));
-  } catch (error){
-    printSection("red", `${text.error1} ->>> ${error}`);
+  } catch (error) {
+    printSection("red", `${text.error1} ${error}`);
   }
 }
 
+// --- Exported main function ---
 export default async function list(commands, options) {
   const systemList = {
     label: text.title1,
@@ -102,18 +120,18 @@ export default async function list(commands, options) {
     label: text.title3,
     color: "red",
     isInstalled: isSnapInstalled,
-    parser:parseSnapPackages
+    parser: parseSnapPackages
   };
 
   switch (options) {
     case "-d":
-      await runList(systemList)
+      await runList(systemList);
       break;
     case "-f":
-      await runList(flatpakList)
+      await runList(flatpakList);
       break;
     case "-s":
-      await runList(snapList)
+      await runList(snapList);
       break;
     default:
       printSection("red", text.error2);
