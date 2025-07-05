@@ -6,7 +6,8 @@
     "remove": "remove",
     "list": "list",
     "-y": "-y",
-    "--refresh": "--fix-missing"
+    "--refresh": "--fix-missing",
+    "--installed": "--installed"
   },
   "fedora": {
     "pack": "dnf",
@@ -15,16 +16,18 @@
     "remove": "remove",
     "list": "list",
     "-y": "-y",
-    "--refresh": "--refresh"
+    "--refresh": "--refresh",
+    "--installed": "--installed"
   },
   "arch": {
     "pack": "pacman",
     "update": "-Syu",
     "search": "-Ss",
     "remove": "-Rns",
-    "list": "-Q",
+    "list": "-Qe",
     "-y": "--noconfirm",
-    "--refresh": "--refresh"
+    "--refresh": "--refresh",
+    "--installed": null
   },
   "flatpak": {
     "pack": "flatpak",
@@ -33,7 +36,8 @@
     "remove": "remove",
     "list": "list",
     "-y": "-y",
-    "--refresh": null
+    "--refresh": null,
+    "--installed": "--app"
   },
   "snap": {
     "pack": "snap",
@@ -42,6 +46,7 @@
     "remove": "remove",
     "list": "list",
     "-y": null,
-    "--refresh": null
+    "--refresh": null,
+    "--installed": null
   }
 }
