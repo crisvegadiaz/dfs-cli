@@ -45,18 +45,18 @@ const parseSnapPackages = (output) => {
     const columns = line.split(/\s{2,}/);
     if (columns.length >= 5) {
       table.push([
-        columns[0].trim(), // Name
-        columns[1].trim(), // Version
-        columns[2].trim(), // Publisher
-        columns[3].trim(), // Notes
-        columns[4].trim()  // Summary
+        columns[0].trim(),
+        columns[1].trim(),
+        columns[2].trim(),
+        columns[3].trim(),
+        columns[4].trim() 
       ]);
     }
   });
   return table.toString();
 };
 
-// Ejecuta una búsqueda y muestra los resultados
+// --- Main runner ---
 const runSearch = async (
   { label, color, isInstalled, cmd, parser },
   searchTerm
@@ -72,14 +72,14 @@ const runSearch = async (
   }
 
   try {
-    const result = await $`${command}`;
-    console.log(parser(result.stdout));
+    const {stdout} = await $`${command}`;
+    console.log(parser(stdout));
   } catch (error){
     printSection("red", `${text.error1} ${error}`);
   }
 };
 
-// Función principal de búsqueda
+// --- Exported main function ---
 export default async function search(commands, searchTerm=null, options) {
   
   if(!searchTerm) return printSection("red", text.error2)

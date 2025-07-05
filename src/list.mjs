@@ -6,10 +6,8 @@ import text from "./text/list.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 import createTable from "./util/createTable.js";
 
-// --- Parsers ---
-
 // Parsea la salida de lista de paquetes del sistema
-function parseSystemPackages(output) {
+const parseSystemPackages = (output) => {
   const table = createTable(
     ["Paquete", "Versión", "Repositorio"],
     [4, 3, 3]
@@ -32,7 +30,7 @@ function parseSystemPackages(output) {
 }
 
 // Parsea la salida de lista de Flatpak
-function parseFlatpakPackages(output) {
+const parseFlatpakPackages = (output) => {
   const table = createTable(
     ['Name', 'ID', 'Version', 'Branch', 'Origin'],
     [2, 3, 1, 1, 1]
@@ -55,7 +53,7 @@ function parseFlatpakPackages(output) {
 }
 
 // Parsea la salida de lista de Snap
-function parseSnapPackages(output) {
+const parseSnapPackages = (output) => {
   const table = createTable(
     ["Name", "Version", "Rev", "Tracking", "Publisher", "Notes"],
     [3, 4, 1, 2, 3, 1]

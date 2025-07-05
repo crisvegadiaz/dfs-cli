@@ -5,7 +5,7 @@ import printSection from "./util/printSection.mjs";
 import text from "./text/update.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 
-//  Ejecuta el comando de actualización para el tipo de paquete especificado.
+// --- Main runner ---
 async function runUpdate({ label, color, isInstalled, cmd }) {
   printSection(color, label);
 
@@ -26,7 +26,7 @@ async function runUpdate({ label, color, isInstalled, cmd }) {
   printSection("bgYellow", text.separator);
 }
 
-//  Ejecuta las actualizaciones según la opción seleccionada.
+// --- Exported main function ---
 export default async function update(commands, option) {
   const systemUpdate = {
     label: text.title1,
