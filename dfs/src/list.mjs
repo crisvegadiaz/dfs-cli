@@ -1,10 +1,10 @@
 #!/usr/bin/env zx
 import { $ } from "zx";
 import printHelp from "./util/printHelp.mjs";
+import createTable from "./util/createTable.js";
 import printSection from "./util/printSection.mjs";
 import text from "./text/list.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
-import createTable from "./util/createTable.js";
 
 // Parsea la salida de lista de paquetes del sistema
 const parseSystemPackages = (output) => {

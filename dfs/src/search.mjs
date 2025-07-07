@@ -6,13 +6,54 @@ import printSection from "./util/printSection.mjs";
 import text from "./text/search.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 
-// Parsea la salida de búsqueda de paquetes del sistema
-const parseSystemPackages = (output) => {
-  const table = createTable(["Paquete", "Descripción"], [4, 6]);
+// Analizadores para la salida de búsqueda del gestor de paquetes del sistema
+const parseDnfSearchOutput = (output) => {
+  const table = createTable(["Package", "Description"], [4, 6]);
   output.split("\n").forEach((line) => {
     const [name, ...desc] = line.split(":");
     if (desc.length) table.push([name.trim(), desc.join(":").trim()]);
   });
+  return table.toString();
+};
+
+const parsePacmanSearchOutput = (output) => {
+  const table = createTable(["Package", "Version", "Description"], [3, 2, 5]);
+  const lines = output.split("\n");
+
+  for (let i = 0; i < lines.length - 1; i++) {
+    const currentLine = lines[i];
+    const nextLine = lines[i + 1];
+
+    if (currentLine && !currentLine.startsWith(" ") && nextLine && nextLine.startsWith(" ")) {
+      const [name, version] = currentLine.split(" ");
+      const description = nextLine.trim();
+      table.push([name, version, description]);
+      i++; 
+    }
+  }
+  return table.toString();
+};
+
+const parseAptSearchOutput = (output) => {
+  const table = createTable(["Package", "Version", "Description"], [3, 2, 5]);
+  const lines = output.split("\n");
+
+  for (let i = 0; i < lines.length - 1; i++) {
+    const currentLine = lines[i];
+    const nextLine = lines[i + 1];
+
+    if (currentLine && !currentLine.startsWith(" ") && nextLine && nextLine.startsWith("  ")) {
+      const parts = currentLine.split(" ");
+      const name = parts[0].split("/")[0];
+      const version = parts[1];
+      const description = nextLine.trim();
+
+      if (name && version && description) {
+        table.push([name, version, description]);
+        i++;
+      }
+    }
+  }
   return table.toString();
 };
 
@@ -22,6 +63,7 @@ const parseFlatpakPackages = (output) => {
     ["Name", "Description", "App ID", "Version", "Branch", "Remote"],
     [2, 4, 5, 2, 1, 1]
   );
+
   output.split("\n").forEach((line) => {
     const [name, description, appId, version, branch, remote] = line.split("\t");
     if (name && description && appId && version && branch && remote) {
@@ -57,10 +99,10 @@ const parseSnapPackages = (output) => {
 };
 
 // --- Main runner ---
-const runSearch = async (
+async function runSearch(
   { label, color, isInstalled, cmd, parser },
   searchTerm
-) => {
+) {
   printSection(color, label);
 
   let command = cmd?.filter(Boolean);
@@ -68,8 +110,10 @@ const runSearch = async (
   if (typeof isInstalled === "function") {
     const tool = await isInstalled();
     if (!tool) return;
-    command = [tool.pack, tool.search, searchTerm].filter(Boolean);
+    command = [tool.pack, tool.search].filter(Boolean);
   }
+
+  command.push(searchTerm);
 
   try {
     const {stdout} = await $`${command}`;
@@ -84,11 +128,17 @@ export default async function search(commands, searchTerm=null, options) {
   
   if(!searchTerm) return printSection("red", text.error2)
 
+  const systemParsers = {
+    pacman: parsePacmanSearchOutput,
+    dnf: parseDnfSearchOutput,
+    apt: parseAptSearchOutput,
+  };
+
   const systemSearch = {
     label: text.title1,
     color: "yellow",
     cmd: [commands.pack, commands.search, searchTerm],
-    parser: parseSystemPackages,
+    parser: systemParsers[commands.pack] || parseDnfSearchOutput,
   };
 
   const flatpakSearch = {
@@ -107,7 +157,7 @@ export default async function search(commands, searchTerm=null, options) {
 
   switch (options) {
     case "-d":
-      await runSearch(systemSearch);
+      await runSearch(systemSearch, searchTerm);
       break;
     case "-f":
       await runSearch(flatpakSearch, searchTerm);
