@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  server-arch:
+    build: .
+    container_name: arch-prueba
+    working_dir: /home/script
+    volumes:
+      - ../../dfs:/home/script:z
+    tty: true
+    command: tail -f /dev/null
