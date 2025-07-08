@@ -1,10 +1,10 @@
 #!/usr/bin/env zx
 import { $ } from "zx";
-import printHelp from "./util/printHelp.mjs";
-import createTable from "./util/createTable.js";
-import printSection from "./util/printSection.mjs";
-import text from "./text/search.json" with { type: "json" };
-import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
+import printHelp from "../utils/printHelp.mjs";
+import createTable from "../utils/createTable.js";
+import printSection from "../utils/printSection.mjs";
+import text from "../locales/es/search.json" with { type: "json" };
+import { isFlatpakInstalled, isSnapInstalled } from "../utils/flatpakAndSnap.mjs";
 
 // Analizadores para la salida de búsqueda del gestor de paquetes del sistema
 const formatDnfPackages = (output) => {

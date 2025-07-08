@@ -1,7 +1,7 @@
 import { $ } from "zx";
 import printSection from "./printSection.mjs";
-import managers from "../commands/managers.json" with { type: "json" };
-import text from "../text/getPackageManager.json" with { type: "json"};
+import managers from "../locales/managers.json" with { type: "json" };
+import text from "../locales/es/getPackageManager.json" with { type: "json"};
 
 export default async function getPackageManager() {
   try {

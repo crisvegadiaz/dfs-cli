@@ -1,9 +1,9 @@
 #!/usr/bin/env zx
 import { $ } from "zx";
-import printHelp from "./util/printHelp.mjs";
-import printSection from "./util/printSection.mjs";
-import text from "./text/update.json" with { type: "json" };
-import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
+import printHelp from "../utils/printHelp.mjs";
+import printSection from "../utils/printSection.mjs";
+import text from "../locales/es/update.json" with { type: "json" };
+import { isFlatpakInstalled, isSnapInstalled } from "../utils/flatpakAndSnap.mjs";
 
 // --- Main runner ---
 async function runUpdate({ label, color, isInstalled, cmd }) {

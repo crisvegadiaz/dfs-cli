@@ -1,13 +1,12 @@
 #!/usr/bin/node
-import list from "./list.mjs";
-import update from "./update.mjs";
-import search from "./search.mjs";
-import superUser from "./util/superUser.js";
-import printHelp from "./util/printHelp.mjs";
-import printSection from "./util/printSection.mjs";
-import text from "./text/dnf.json" with { type: "json" };
-import getPackageManager from "./util/getPackageManager.mjs";
-
+import list from "./src/commands/list.mjs";
+import update from "./src/commands/update.mjs";
+import search from "./src/commands/search.mjs";
+import superUser from "./src/utils/superUser.js";
+import printHelp from "./src/utils/printHelp.mjs";
+import printSection from "./src/utils/printSection.mjs";
+import text from "./src/locales/es/main.json" with { type: "json" };
+import getPackageManager from "./src/utils/getPackageManager.mjs";
 
 const commands = await getPackageManager();
 
