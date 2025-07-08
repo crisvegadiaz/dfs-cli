@@ -7,9 +7,9 @@ import text from "./text/list.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 
 // Parsea la salida de lista de paquetes del sistema
-const parseSystemPackages = (output) => {
+const formatDnfPackages = (output) => {
   const table = createTable(
-    ["Paquete", "Versión", "Repositorio"],
+    ["Repository", "Version", "Package"],
     [4, 3, 3]
   );
 
@@ -29,8 +29,53 @@ const parseSystemPackages = (output) => {
   return table.toString();
 }
 
+const formatPacmanPackages = (output) => {
+  const table = createTable(
+    ["Name", "Version"],
+    [5, 5]
+  );
+
+  output.split("\n").forEach((line, idx) => {
+    if (idx === 0 || !line.trim()) return;
+    
+    const columns = line.split(" ");
+    if (columns.length >= 2) {
+      table.push([
+        columns[0].trim(),
+        columns[1].trim()
+      ]);
+    }
+  });
+
+  return table.toString();
+}
+
+const formatAptPackages = (output) =>{
+  const table = createTable(
+    ["Package","Distribution", "Version","Architecture"],
+    [3, 3, 2, 2]
+  );
+
+  output.split("\n").forEach((line) => {
+    if (!line.trim() || line.startsWith("Listing...")) return;
+
+    const parts = line.trim().split(/\s+/);
+
+    if (parts.length >= 3) {
+      const [pkgName, distribution] = parts[0].split('/');
+      const version = parts[1];
+      const arch = parts[2];
+
+      if (pkgName && version && arch) {
+        table.push([pkgName, distribution || 'n/a', version, arch]);
+      }
+    }
+  });
+  return table.toString();
+}
+
 // Parsea la salida de lista de Flatpak
-const parseFlatpakPackages = (output) => {
+const formatFlatpakPackages = (output) => {
   const table = createTable(
     ['Name', 'ID', 'Version', 'Branch', 'Origin'],
     [2, 3, 1, 1, 1]
@@ -53,7 +98,7 @@ const parseFlatpakPackages = (output) => {
 }
 
 // Parsea la salida de lista de Snap
-const parseSnapPackages = (output) => {
+const formatSnapPackages = (output) => {
   const table = createTable(
     ["Name", "Version", "Rev", "Tracking", "Publisher", "Notes"],
     [3, 4, 1, 2, 3, 1]
@@ -91,7 +136,7 @@ async function runList({ label, color, isInstalled, cmd, parser }) {
   }
 
   try {
-    const { stdout } = await $`${command}`;
+    const  {stdout}  = await $`${command}`;
     console.log(parser(stdout));
   } catch (error) {
     printSection("red", `${text.error1} ${error}`);
@@ -100,25 +145,31 @@ async function runList({ label, color, isInstalled, cmd, parser }) {
 
 // --- Exported main function ---
 export default async function list(commands, options) {
+  const systemParsers = {
+    pacman: formatPacmanPackages,
+    dnf: formatDnfPackages,
+    apt: formatAptPackages,
+  };
+
   const systemList = {
     label: text.title1,
     color: "yellow",
     cmd: [commands.pack, commands.list, commands["--installed"]],
-    parser: parseSystemPackages
+    parser: systemParsers[commands.pack] || formatDnfPackages
   };
 
   const flatpakList = {
     label: text.title2,
     color: "blue",
     isInstalled: isFlatpakInstalled,
-    parser: parseFlatpakPackages
+    parser: formatFlatpakPackages
   };
 
   const snapList = {
     label: text.title3,
     color: "red",
     isInstalled: isSnapInstalled,
-    parser: parseSnapPackages
+    parser: formatSnapPackages
   };
 
   switch (options) {

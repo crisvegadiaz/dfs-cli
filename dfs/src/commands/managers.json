@@ -24,7 +24,7 @@
     "update": "-Syu",
     "search": "-Ss",
     "remove": "-Rns",
-    "list": "-Qe",
+    "list": "-Q",
     "-y": "--noconfirm",
     "--refresh": "--refresh",
     "--installed": null

@@ -7,7 +7,7 @@ import text from "./text/search.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "./util/flatpakAndSnap.mjs";
 
 // Analizadores para la salida de búsqueda del gestor de paquetes del sistema
-const parseDnfSearchOutput = (output) => {
+const formatDnfPackages = (output) => {
   const table = createTable(["Package", "Description"], [4, 6]);
   output.split("\n").forEach((line) => {
     const [name, ...desc] = line.split(":");
@@ -16,7 +16,7 @@ const parseDnfSearchOutput = (output) => {
   return table.toString();
 };
 
-const parsePacmanSearchOutput = (output) => {
+const formatPacmanPackages = (output) => {
   const table = createTable(["Package", "Version", "Description"], [3, 2, 5]);
   const lines = output.split("\n");
 
@@ -34,7 +34,7 @@ const parsePacmanSearchOutput = (output) => {
   return table.toString();
 };
 
-const parseAptSearchOutput = (output) => {
+const formatAptPackages = (output) => {
   const table = createTable(["Package", "Version", "Description"], [3, 2, 5]);
   const lines = output.split("\n");
 
@@ -58,7 +58,7 @@ const parseAptSearchOutput = (output) => {
 };
 
 // Parsea la salida de búsqueda de Flatpak
-const parseFlatpakPackages = (output) => {
+const formatFlatpakPackages = (output) => {
   const table = createTable(
     ["Name", "Description", "App ID", "Version", "Branch", "Remote"],
     [2, 4, 5, 2, 1, 1]
@@ -81,7 +81,7 @@ const parseFlatpakPackages = (output) => {
 };
 
 // Parsea la salida de búsqueda de Snap
-const parseSnapPackages = (output) => {
+const formatSnapPackages = (output) => {
   const table = createTable(["Name", "Version", "Publisher", "Notes", "Summary"], [2, 2, 2, 1, 5]);
   output.split("\n").forEach((line) => {
     const columns = line.split(/\s{2,}/);
@@ -129,30 +129,30 @@ export default async function search(commands, searchTerm=null, options) {
   if(!searchTerm) return printSection("red", text.error2)
 
   const systemParsers = {
-    pacman: parsePacmanSearchOutput,
-    dnf: parseDnfSearchOutput,
-    apt: parseAptSearchOutput,
+    pacman: formatPacmanPackages,
+    dnf: formatDnfPackages,
+    apt: formatAptPackages,
   };
 
   const systemSearch = {
     label: text.title1,
     color: "yellow",
     cmd: [commands.pack, commands.search, searchTerm],
-    parser: systemParsers[commands.pack] || parseDnfSearchOutput,
+    parser: systemParsers[commands.pack] || formatDnfPackages,
   };
 
   const flatpakSearch = {
     label: text.title2,
     color: "blue",
     isInstalled: isFlatpakInstalled,
-    parser: parseFlatpakPackages,
+    parser: formatFlatpakPackages,
   };
 
   const snapSearch = {
     label: text.title3,
     color: "red",
     isInstalled: isSnapInstalled,
-    parser: parseSnapPackages,
+    parser: formatSnapPackages,
   };
 
   switch (options) {

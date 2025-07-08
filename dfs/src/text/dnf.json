@@ -1,5 +1,6 @@
 {
-  "error": "✗ Comando no reconocido.",
+  "error1": "✗ Error: no se encontró administrador de paquetes compatible",
+  "error2": "✗ Comando no reconocido.",
   "help": [
     "Uso: dfs <comando> [opciones]",
     "Comandos disponibles:",

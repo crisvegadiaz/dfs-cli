@@ -1,4 +1,4 @@
-import printHelp  from "./printHelp.mjs";
+import printHelp from "./printHelp.mjs";
 import printSection from "./printSection.mjs";
 import text from "../text/superUser.json" with { type: "json" };
 

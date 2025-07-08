@@ -11,6 +11,11 @@ import getPackageManager from "./util/getPackageManager.mjs";
 
 const commands = await getPackageManager();
 
+if (!commands) {
+  printSection("red", text.error1);
+  process.exit(1);
+}
+
 switch (process.argv[2]) {
   case "update":
     superUser();
@@ -23,7 +28,7 @@ switch (process.argv[2]) {
     await list(commands, process.argv[3]);
     break;
   default:
-    printSection("red",text.error);
+    printSection("red",text.error2);
     printHelp(text.help);
     break;
 }
