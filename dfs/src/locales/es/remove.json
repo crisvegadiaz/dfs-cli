@@ -1,0 +1,13 @@
+{
+  "title1": ">>> 󰆴 Eliminar paquetes del sistema...",
+  "title2": ">>> 󰆴 Eliminar aplicaciones Flatpak...",
+  "title3": ">>> 󰆴 Eliminar aplicaciones Snap...",
+  "error": "✗ Opción no reconocida. Usa -d, -f o -s.",
+  "separator": "+=================================+",
+  "help": [
+    "Ejemplo: sudo dfs remove [nombre-del-paquete] -d",
+    "   -d para eliminar el sistema",
+    "   -f para eliminar aplicaciones Flatpak",
+    "   -s para eliminar aplicaciones Snap"
+  ]
+}
