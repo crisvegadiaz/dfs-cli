@@ -5,6 +5,7 @@
     "Uso: dfs <comando> [opciones]",
     "Comandos disponibles:",
     "  update - Actualiza el sistema.",
+    "  install - Instala paquetes en el sistema.",
     "  search - Busca paquetes en el sistema.",
     "  list - Lista los paquetes del sistema.",
     "Opciones:",
