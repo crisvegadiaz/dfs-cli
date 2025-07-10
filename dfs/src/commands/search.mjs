@@ -1,6 +1,5 @@
-#!/usr/bin/env zx
-import { $ } from "zx";
 import printHelp from "../utils/printHelp.mjs";
+import runCommand from "../utils/runCommand.mjs";
 import createTable from "../utils/createTable.js";
 import printSection from "../utils/printSection.mjs";
 import text from "../locales/es/search.json" with { type: "json" };
@@ -13,7 +12,7 @@ const formatDnfPackages = (output) => {
     const [name, ...desc] = line.split(":");
     if (desc.length) table.push([name.trim(), desc.join(":").trim()]);
   });
-  return table.toString();
+  console.log(table.toString());
 };
 
 const formatPacmanPackages = (output) => {
@@ -31,7 +30,7 @@ const formatPacmanPackages = (output) => {
       i++; 
     }
   }
-  return table.toString();
+  console.log(table.toString());
 };
 
 const formatAptPackages = (output) => {
@@ -54,7 +53,7 @@ const formatAptPackages = (output) => {
       }
     }
   }
-  return table.toString();
+  console.log(table.toString());
 };
 
 // Parsea la salida de búsqueda de Flatpak
@@ -77,7 +76,7 @@ const formatFlatpakPackages = (output) => {
       ]);
     }
   });
-  return table.toString();
+  console.log(table.toString());
 };
 
 // Parsea la salida de búsqueda de Snap
@@ -95,38 +94,13 @@ const formatSnapPackages = (output) => {
       ]);
     }
   });
-  return table.toString();
-};
-
-// --- Main runner ---
-async function runSearch(
-  { label, color, isInstalled, cmd, parser },
-  searchTerm
-) {
-  printSection(color, label);
-
-  let command = cmd?.filter(Boolean);
-
-  if (typeof isInstalled === "function") {
-    const tool = await isInstalled();
-    if (!tool) return;
-    command = [tool.pack, tool.search].filter(Boolean);
-  }
-
-  command.push(searchTerm);
-
-  try {
-    const {stdout} = await $`${command}`;
-    console.log(parser(stdout));
-  } catch (error){
-    printSection("red", `${text.error1} ${error}`);
-  }
+  console.log(table.toString());
 };
 
 // --- Exported main function ---
-export default async function search(commands, searchTerm=null, options) {
+export default async function search(commands, arg, options) {
   
-  if(!searchTerm) return printSection("red", text.error2)
+  if(!arg) return printSection("red", text.error1)
 
   const systemParsers = {
     pacman: formatPacmanPackages,
@@ -137,36 +111,38 @@ export default async function search(commands, searchTerm=null, options) {
   const systemSearch = {
     label: text.title1,
     color: "yellow",
-    cmd: [commands.pack, commands.search, searchTerm],
-    parser: systemParsers[commands.pack] || formatDnfPackages,
+    cmd: [commands.pack, commands.search, arg],
+    func: systemParsers[commands.pack] || formatDnfPackages,
   };
 
   const flatpakSearch = {
     label: text.title2,
     color: "blue",
+    cmd: ["pack", "search", [arg]],
+    func: formatFlatpakPackages,
     isInstalled: isFlatpakInstalled,
-    parser: formatFlatpakPackages,
   };
 
   const snapSearch = {
     label: text.title3,
     color: "red",
+    cmd: ["pack", "search", [arg]],
+    func: formatSnapPackages,
     isInstalled: isSnapInstalled,
-    parser: formatSnapPackages,
   };
 
   switch (options) {
     case "-d":
-      await runSearch(systemSearch, searchTerm);
+      await runCommand(systemSearch);
       break;
     case "-f":
-      await runSearch(flatpakSearch, searchTerm);
+      await runCommand(flatpakSearch);
       break;
     case "-s":
-      await runSearch(snapSearch, searchTerm);
+      await runCommand(snapSearch);
       break;
     default:
-      printSection("red", text.error3);
+      printSection("red", text.error2);
       printHelp(text.help);
       break;
   }

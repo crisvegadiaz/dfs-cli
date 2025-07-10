@@ -1,6 +1,5 @@
-#!/usr/bin/env zx
-import { $ } from "zx";
 import printHelp from "../utils/printHelp.mjs";
+import runCommand from "../utils/runCommand.mjs";
 import createTable from "../utils/createTable.js";
 import printSection from "../utils/printSection.mjs";
 import text from "../locales/es/list.json" with { type: "json" };
@@ -25,8 +24,7 @@ const formatDnfPackages = (output) => {
       ]);
     }
   });
-
-  return table.toString();
+  console.log(table.toString());
 }
 
 const formatPacmanPackages = (output) => {
@@ -46,8 +44,7 @@ const formatPacmanPackages = (output) => {
       ]);
     }
   });
-
-  return table.toString();
+  console.log(table.toString());
 }
 
 const formatAptPackages = (output) =>{
@@ -71,7 +68,7 @@ const formatAptPackages = (output) =>{
       }
     }
   });
-  return table.toString();
+  console.log(table.toString());
 }
 
 // Parsea la salida de lista de Flatpak
@@ -93,8 +90,7 @@ const formatFlatpakPackages = (output) => {
       ]);
     }
   });
-
-  return table.toString();
+  console.log(table.toString());
 }
 
 // Parsea la salida de lista de Snap
@@ -119,28 +115,7 @@ const formatSnapPackages = (output) => {
       ]);
     }
   });
-
-  return table.toString();
-}
-
-// --- Main runner ---
-async function runList({ label, color, isInstalled, cmd, parser }) {
-  printSection(color, label);
-
-  let command = cmd?.filter(Boolean);
-
-  if (typeof isInstalled === "function") {
-    const tool = await isInstalled();
-    if (!tool) return;
-    command = [tool.pack, tool.list, tool["--installed"]].filter(Boolean);
-  }
-
-  try {
-    const  {stdout}  = await $`${command}`;
-    console.log(parser(stdout));
-  } catch (error) {
-    printSection("red", `${text.error1} ${error}`);
-  }
+  console.log(table.toString());
 }
 
 // --- Exported main function ---
@@ -155,35 +130,37 @@ export default async function list(commands, options) {
     label: text.title1,
     color: "yellow",
     cmd: [commands.pack, commands.list, commands["--installed"]],
-    parser: systemParsers[commands.pack] || formatDnfPackages
+    func: systemParsers[commands.pack] || formatDnfPackages
   };
 
   const flatpakList = {
     label: text.title2,
     color: "blue",
+    cmd: ["pack", "list", "--installed"],
     isInstalled: isFlatpakInstalled,
-    parser: formatFlatpakPackages
+    func: formatFlatpakPackages
   };
 
   const snapList = {
     label: text.title3,
     color: "red",
+    cmd: ["pack", "list"],
     isInstalled: isSnapInstalled,
-    parser: formatSnapPackages
+    func: formatSnapPackages
   };
 
   switch (options) {
     case "-d":
-      await runList(systemList);
+      await runCommand(systemList);
       break;
     case "-f":
-      await runList(flatpakList);
+      await runCommand(flatpakList);
       break;
     case "-s":
-      await runList(snapList);
+      await runCommand(snapList);
       break;
     default:
-      printSection("red", text.error2);
+      printSection("red", text.error);
       printHelp(text.help);
       break;
   }
