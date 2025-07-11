@@ -6,6 +6,7 @@
     "Comandos disponibles:",
     "  update - Actualiza el sistema.",
     "  install - Instala paquetes en el sistema.",
+    "  remove - Elimina paquetes del sistema.",
     "  search - Busca paquetes en el sistema.",
     "  list - Lista los paquetes del sistema.",
     "Opciones:",

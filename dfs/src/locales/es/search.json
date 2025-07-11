@@ -2,11 +2,10 @@
   "title1": ">>>  Buscando paquetes con el gestor del sistema...",
   "title2": ">>>  Buscando aplicaciones Flatpak...",
   "title3": ">>>  Buscando aplicaciones Snap...",
-  "error1": "✗ Error al ejecutar la búsqueda -->>>",
-  "error2": "✗ El comando 'dfs search null' no es válido.",
-  "error3": "✗ Opción no reconocida. Usa -d, -f o -s.",
+  "error1": "✗ El comando 'dfs search null' no es válido.",
+  "error2": "✗ Opción no reconocida. Usa -d, -f o -s.",
   "help": [
-    "Ejemplo: dfs search git -d",
+    "Ejemplo: dfs search [nombre-del-paquete] -d",
     "   -d para buscar en el sistema",
     "   -f para buscar aplicaciones Flatpak",
     "   -s para buscar aplicaciones Snap"
