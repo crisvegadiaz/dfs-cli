@@ -1,6 +1,12 @@
+import language from "./language.js";
 import printHelp from "./printHelp.mjs";
 import printSection from "./printSection.mjs";
-import text from "../locales/es/superUser.json" with { type: "json" };
+
+let text = (
+  await import(`../locales/${language()}/superUser.json`, {
+    with: { type: "json" },
+  })
+).default;
 
 export default function superUser() {
   if (!process.getuid || process.getuid() !== 0) {

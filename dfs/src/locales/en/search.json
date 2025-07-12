@@ -1,0 +1,13 @@
+{
+  "title1": ">>>  Searching for packages with the system manager...",
+  "title2": ">>>  Searching for Flatpak applications...",
+  "title3": ">>>  Searching for Snap applications...",
+  "error1": "✗ The command 'dfs search null' is not valid.",
+  "error2": "✗ Unrecognized option. Use -d, -f, or -s.",
+  "help": [
+    "Example: dfs search [package-name] -d",
+    "   -d to search in the system",
+    "   -f to search for Flatpak applications",
+    "   -s to search for Snap applications"
+  ]
+}

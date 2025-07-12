@@ -1,0 +1,7 @@
+{
+  "error": "✗   Error: This command requires superuser permissions.",
+  "help": [
+    ">>>   Please run the command with 'sudo'.",
+    "Example: sudo dfs update -d"
+  ]
+}

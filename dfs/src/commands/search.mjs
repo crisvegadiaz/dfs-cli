@@ -1,9 +1,15 @@
+import language from "../utils/language.js";
 import printHelp from "../utils/printHelp.mjs";
 import runCommand from "../utils/runCommand.mjs";
 import createTable from "../utils/createTable.js";
 import printSection from "../utils/printSection.mjs";
-import text from "../locales/es/search.json" with { type: "json" };
 import { isFlatpakInstalled, isSnapInstalled } from "../utils/flatpakAndSnap.mjs";
+
+let text = (
+  await import(`../locales/${language()}/search.json`, {
+    with: { type: "json" },
+  })
+).default;
 
 // Analizadores para la salida de búsqueda del gestor de paquetes del sistema
 const formatDnfPackages = (output) => {

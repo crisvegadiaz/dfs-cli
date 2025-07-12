@@ -1,0 +1,13 @@
+{
+  "title1": ">>>  Updating system packages...",
+  "title2": ">>>  Updating Flatpak applications...",
+  "title3": ">>>  Updating Snap applications...",
+  "error": "✗ Unrecognized option. Use -d, -f, or -s.",
+  "separator": "+=================================+",
+  "help": [
+    "Example: sudo dfs update -d",
+    "   -d to update the system",
+    "   -f to update Flatpak applications",
+    "   -s to update Snap applications"
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "warning": "Unsupported operating system. Please use Debian, Fedora, or Arch Linux.",
+  "error": "✗ (Error detecting the operating system:)"
+}

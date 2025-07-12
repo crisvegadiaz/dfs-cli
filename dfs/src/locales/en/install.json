@@ -1,0 +1,13 @@
+{
+  "title1": ">>> 󰏔 Installing system packages...",
+  "title2": ">>> 󰏔 Installing Flatpak applications...",
+  "title3": ">>> 󰏔 Installing Snap applications...",
+  "error": "✗ Unrecognized option. Use -d, -f, or -s.",
+  "separator": "+=================================+",
+  "help": [
+    "Example: sudo dfs install [package-name] -d",
+    "   -d to install on the system",
+    "   -f to install Flatpak applications",
+    "   -s to install Snap applications"
+  ]
+}

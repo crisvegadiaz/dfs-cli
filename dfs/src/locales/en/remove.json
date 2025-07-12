@@ -1,0 +1,14 @@
+{
+  "title1": ">>> 󰆴 Removing system packages...",
+  "title2": ">>> 󰆴 Removing Flatpak applications...",
+  "title3": ">>> 󰆴 Removing Snap applications...",
+  "error": "✗ Unrecognized option. Use -d, -f, or -s.",
+  "separator": "+=================================+",
+  "help": [
+    "Example: sudo dfs remove [package-name] -d",
+    "   -d to remove from the system",
+    "   -f to remove Flatpak applications",
+    "   -s to remove Snap applications"
+  ]
+}
+

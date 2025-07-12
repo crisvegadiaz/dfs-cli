@@ -1,0 +1,18 @@
+{
+  "error1": "✗ Error: no compatible package manager found",
+  "error2": "✗ Command not recognized.",
+  "help": [
+    "Usage: dfs <command> [options]",
+    "Available commands:",
+    "  update - Updates the system.",
+    "  install - Installs packages on the system.",
+    "  remove - Removes packages from the system.",
+    "  search - Searches for packages on the system.",
+    "  list - Lists the packages on the system.",
+    "Options:",
+    "  -d - Updates the operating system.",
+    "  -f - Updates Flatpak applications.",
+    "  -s - Updates Snap applications.",
+    "Example: dfs update -d - Updates the system packages."
+  ]
+}

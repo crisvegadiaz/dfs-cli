@@ -1,0 +1,13 @@
+{
+  "title1": ">>>   Listing system packages...",
+  "title2": ">>>   Listing Flatpak applications...",
+  "title3": ">>>   Listing Snap applications...",
+  "error": "✗ Unrecognized option. Use -d, -f, or -s.",
+  "separator": "+=================================+",
+  "help": [
+    "Example: sudo dfs list -d",
+    "   -d to list system packages",
+    "   -f to list Flatpak applications",
+    "   -s to list Snap applications"
+  ]
+}

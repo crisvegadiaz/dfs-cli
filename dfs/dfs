@@ -3,12 +3,18 @@ import list from "./src/commands/list.mjs";
 import update from "./src/commands/update.mjs";
 import search from "./src/commands/search.mjs";
 import remove from "./src/commands/remove.mjs";
+import language from "./src/utils/language.js";
 import install from "./src/commands/install.mjs";
 import superUser from "./src/utils/superUser.js";
 import printHelp from "./src/utils/printHelp.mjs";
 import printSection from "./src/utils/printSection.mjs";
 import getPackageManager from "./src/utils/getPackageManager.mjs";
-import text from "./src/locales/es/main.json" with { type: "json" };
+
+let text = (
+  await import(`./src/locales/${language()}/main.json`, {
+    with: { type: "json" },
+  })
+).default;
 
 const commands = await getPackageManager();
 
@@ -37,7 +43,7 @@ switch (process.argv[2]) {
     await list(commands, process.argv[3]);
     break;
   default:
-    printSection("red",text.error2);
+    printSection("red", text.error2);
     printHelp(text.help);
     break;
 }

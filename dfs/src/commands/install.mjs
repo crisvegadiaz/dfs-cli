@@ -1,8 +1,14 @@
+import language from "../utils/language.js";
 import printHelp from "../utils/printHelp.mjs";
 import runCommand from "../utils/runCommand.mjs";
 import printSection from "../utils/printSection.mjs";
-import text from "../locales/es/install.json" with { type: "json" };
 import {isFlatpakInstalled, isSnapInstalled} from "../utils/flatpakAndSnap.mjs";
+
+let text = (
+  await import(`../locales/${language()}/install.json`, {
+    with: { type: "json" },
+  })
+).default;
 
 // --- Exported main function ---
 export default async function install(commands, arg, option) {

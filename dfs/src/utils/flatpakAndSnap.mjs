@@ -1,8 +1,14 @@
 #!/usr/bin/env zx
 import { $ } from "zx";
+import language from "./language.js";
 import printSection from "./printSection.mjs";
 import managers from "../locales/managers.json" with { type: "json" };
-import text from "../locales/es/flatpakAndSnap.json" with { type: "json" };
+
+let text = (
+  await import(`../locales/${language()}/flatpakAndSnap.json`, {
+    with: { type: "json" },
+  })
+).default;
 
 async function isCommandInstalled(command, managerKey, notFoundMsg) {
   try {
