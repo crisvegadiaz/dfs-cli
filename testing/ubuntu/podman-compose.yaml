@@ -1,9 +1,9 @@
 version: "3.9"
 
 services:
-  server-fedora:
+  server-ubuntu:
     build: .
-    container_name: fedora-prueba
+    container_name: ubuntu-prueba
     working_dir: /home/script
     tty: true
 

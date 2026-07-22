@@ -1,10 +1,11 @@
-# Usar una imagen base oficial y estable de Fedora Linux.
-FROM fedora:40
+# Usar una imagen base de Fedora con systemd dentro del contenedor
+FROM jrei/systemd-fedora:44
 
-# Actualizar el sistema e instalar Node.js y npm.
+# Actualizar el sistema e instalar Node.js, npm, Flatpak y snapd
 RUN dnf -y update && \
-    dnf -y install nodejs npm --setopt=install_weak_deps=False && \
+    dnf -y install nodejs npm flatpak snapd --setopt=install_weak_deps=False && \
     dnf clean all
-    
-# Establecer el directorio de trabajo dentro del contenedor.
+
+# Directorio de trabajo dentro del contenedor
+RUN mkdir -p /home/script
 WORKDIR /home/script
