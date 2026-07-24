@@ -14,9 +14,70 @@ let text = (
 // Analizadores para la salida de búsqueda del gestor de paquetes del sistema
 const formatDnfPackages = (output) => {
   const table = createTable(["Package", "Description"], [4, 6]);
+
   output.split("\n").forEach((line) => {
-    const [name, ...desc] = line.split(":");
-    if (desc.length) table.push([name.trim(), desc.join(":").trim()]);
+    const trimmed = line.trim();
+    if (
+      !trimmed ||
+      trimmed.startsWith("Package") ||
+      trimmed.startsWith("Matched fields") ||
+      trimmed.startsWith("Updating") ||
+      trimmed.startsWith("Repositories loaded") ||
+      trimmed.startsWith("Loaded plugins") ||
+      trimmed.startsWith("No matches found") ||
+      trimmed.startsWith("Warning") ||
+      /^[┌└├─╞]+$/.test(trimmed) ||
+      (trimmed.startsWith("│") && trimmed.split("│").every((cell) => !cell.trim()))
+    ) {
+      return;
+    }
+
+    const rowCells = line
+      .replace(/^\s*│\s*|\s*│\s*$/g, "")
+      .split("│")
+      .map((cell) => cell.trim())
+      .filter(Boolean);
+
+    if (rowCells.length >= 1) {
+      const firstCell = rowCells[0];
+      if (/^Matched fields$/i.test(firstCell)) return;
+
+      const [namePart, ...descPart] = firstCell.split(/\t/);
+      let name = namePart?.trim() || "";
+      let description = descPart.join(" ").trim();
+
+      if (!description && rowCells.length > 1) {
+        const secondCell = rowCells[1].trim();
+        if (!/^name( \(exact\))?$|^name, summary$/i.test(secondCell)) {
+          description = secondCell;
+        }
+      }
+
+      if (!description) {
+        const columns = firstCell.split(/\s{2,}/).map((c) => c.trim()).filter(Boolean);
+        if (columns.length >= 2) {
+          name = columns[0];
+          description = columns.slice(1).join(" ");
+        }
+      }
+
+      if (name) {
+        table.push([name, description]);
+      }
+      return;
+    }
+
+    const colonMatch = line.match(/^([^:]+):\s*(.+)$/);
+    if (colonMatch) {
+      const [, name, description] = colonMatch;
+      table.push([name.trim(), description.trim()]);
+      return;
+    }
+
+    const columns = line.split(/\s{2,}/);
+    if (columns.length >= 2) {
+      table.push([columns[0].trim(), columns.slice(1).join(" ").trim()]);
+    }
   });
   console.log(table.toString());
 };
