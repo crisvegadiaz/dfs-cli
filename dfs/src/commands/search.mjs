@@ -178,7 +178,10 @@ export default async function search(commands, arg, options) {
   const systemSearch = {
     label: text.title1,
     color: "yellow",
-    cmd: [commands.pack, commands.search, arg],
+    cmd:
+      commands.pack === "dnf"
+        ? [commands.pack, "--cacheonly", commands.search, arg]
+        : [commands.pack, commands.search, arg],
     func: systemParsers[commands.pack] || formatDnfPackages,
   };
 

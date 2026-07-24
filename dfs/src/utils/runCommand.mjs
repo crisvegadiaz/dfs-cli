@@ -36,11 +36,13 @@ export default async function runCommand({
   }
 
   try {
-    const { stdout } = await $`${command}`;
+    const result = await $`${command}`;
+    const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+
     if (func) {
-      func(stdout);
-    } else if (stdout) {
-      console.log(stdout);
+      func(output);
+    } else if (output) {
+      console.log(output);
     }
   } catch (error) {
     console.error(`Error al ejecutar el comando: ${command.join(" ")}`);

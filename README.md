@@ -38,13 +38,43 @@ Para hacer que el comando `dfs` esté disponible globalmente en tu sistema, sigu
     npm install
     ```
 
-3.  **Enlaza el script para hacerlo ejecutable globalmente:**
-    Esto crea un enlace simbólico que te permite llamar a `dfs` desde cualquier lugar.
+3.  **Registra `dfs` como comando del sistema:**
+
+    Opción A: enlazar el paquete localmente con npm
     ```bash
     sudo npm link
     ```
 
-## 💻 Uso
+    Opción B: instalar el paquete globalmente desde la carpeta del proyecto
+    ```bash
+    sudo npm install -g .
+    ```
+
+    Cualquiera de estas opciones creará el comando `dfs` y permitirá ejecutarlo desde cualquier directorio.
+
+## �️ Desinstalación
+
+Si deseas quitar el comando `dfs` de tu sistema, usa uno de estos métodos según cómo lo instalaste:
+
+- **Si lo instalaste con `npm link`:**
+  ```bash
+  cd dfs
+  sudo npm unlink
+  ```
+
+- **Si lo instalaste con `npm install -g .`:**
+  ```bash
+  sudo npm uninstall -g script
+  ```
+  
+- **Luego, para limpiar el enlace global que quedó registrado:`:**
+  ```bash
+  sudo npm unlink -g script
+  ```
+
+Esto eliminará el comando global `dfs` y dejará de estar disponible desde cualquier directorio.
+
+## �💻 Uso
 
 La sintaxis general del comando es:
 
